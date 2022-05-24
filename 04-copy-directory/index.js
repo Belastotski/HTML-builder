@@ -5,8 +5,6 @@ let path = join(__dirname, 'files');
 let newPath = join(__dirname,'files-copy');
 
 async function* files(path,newPath) {
-  await rmdir(newPath, {recursive: true});
-  await mkdir(newPath, {recursive: true});
   const dirs = await readdir(path, { withFileTypes: true });
   for (const dir of dirs) {
     const res = resolve(path, dir.name);
@@ -17,9 +15,10 @@ async function* files(path,newPath) {
     } else yield {res, newRes};
   }
 }
-
-(async () => {
-  for await (const file of files(path,newPath)) {
-    await copyFile(file.res,file.newRes);
-  }
-})();
+rmdir(newPath, {recursive: true, force: true})
+  .then(mkdir(newPath, {recursive: true}))
+  .then(async () => {
+    for await (const file of files(path,newPath)) {
+      await copyFile(file.res,file.newRes);
+    }
+  });
