@@ -7,7 +7,7 @@ async function* files(path) {
   const dirs = await readdir(path, { withFileTypes: true });
   for (const dir of dirs) {
     const res = resolve(path, dir.name);
-    dir.isDirectory() ? yield* files(res) : yield res;
+    if(!dir.isDirectory())  yield res;
   }
 }
 
