@@ -35,7 +35,7 @@ async function* copyFiles(path,newPath) {
 
 
 rmdir(distPath,{ recursive: true, force: true })
-  .then(mkdir(distPath, {recursive: true}))
+  .then(async () => { await mkdir(distPath, {recursive: true});})
   .then( async () => {
     for await (const file of copyFiles(assetsPath,newAssetsPath)) {
       await copyFile(file.res,file.newRes);
