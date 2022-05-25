@@ -1,5 +1,5 @@
 const { resolve, join, parse} = require('path');
-const { readdir , mkdir, rmdir, copyFile, readFile } = require('fs').promises;
+const { readdir , mkdir, rm, copyFile, readFile } = require('fs').promises;
 const {createWriteStream, createReadStream} = require('fs');
 
 
@@ -17,7 +17,7 @@ async function* getFiles(path) {
   const dirs = await readdir(path, { withFileTypes: true });
   for (const dir of dirs) {
     const res = resolve(path, dir.name);
-    dir.isDirectory() ? yield* getFiles(res) : yield res;
+    dir.isDirectory() ? yield* await getFiles(res) : yield res;
   }
 }
 
@@ -34,7 +34,7 @@ async function* copyFiles(path,newPath) {
 }
 
 
-rmdir(distPath,{ recursive: true, force: true })
+rm(distPath,{ recursive: true, force: true })
   .then(async () => { await mkdir(distPath, {recursive: true});})
   .then( async () => {
     for await (const file of copyFiles(assetsPath,newAssetsPath)) {
@@ -58,3 +58,4 @@ rmdir(distPath,{ recursive: true, force: true })
       .then( text => (html.forEach( (val, key) => text = text.replace(`{{${key}}}`,val)),text))
       .then( text => bundle.write(text));
   });
+
