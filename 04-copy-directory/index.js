@@ -16,9 +16,12 @@ async function* files(path,newPath) {
   }
 }
 rm(newPath, {recursive: true, force: true})
-  .then(mkdir(newPath, {recursive: true}))
+  .then(async () => mkdir(newPath, {recursive: true}))
   .then(async () => {
     for await (const file of files(path,newPath)) {
       await copyFile(file.res,file.newRes);
     }
-  });
+  }).catch(e => console.error('MyError:' + e.message));
+
+
+
